@@ -1,0 +1,45 @@
+{
+    "name": "erlenwald/filament-phone-input",
+    "description": "A Filament phone input field with country dropdown, masks, country detection and CSS flag atlas.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "laravel",
+        "filament",
+        "filamentphp",
+        "livewire",
+        "alpinejs",
+        "phone",
+        "phone-input",
+        "phone-number",
+        "country-picker",
+        "flags"
+    ],
+    "authors": [
+        {
+            "name": "Valentin Zubchenko",
+            "email": "webmaster@kikimer.ru"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "filament/filament": "^5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Erlenwald\\FilamentPhoneInput\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Erlenwald\\FilamentPhoneInput\\PhoneInputServiceProvider"
+            ]
+        }
+    },
+    "support": {
+        "issues": "https://github.com/erlenwald/filament-phone-input/issues",
+        "source": "https://github.com/erlenwald/filament-phone-input"
+    },
+    "minimum-stability": "stable"
+}

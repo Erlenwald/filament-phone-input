@@ -1,0 +1,37 @@
+/*
+|--------------------------------------------------------------------------
+| Filament Phone Input custom styles
+|--------------------------------------------------------------------------
+|
+| This file is loaded after the package CSS when it exists at:
+|
+| resources/css/vendor/filament-phone-input/phone-input.css
+|
+| Publish it with:
+|
+| php artisan vendor:publish --tag=filament-phone-input-styles
+| php artisan filament:assets
+|
+| You may override CSS variables or component classes here.
+|
+*/
+
+/*
+.fi-phone-input,
+.fi-phone-input__dropdown {
+    --fi-phone-input-primary: var(--primary-600);
+}
+*/
+
+/*
+.fi-phone-input__country-button {
+    min-width: 3.75rem;
+}
+*/
+
+/*
+.fi-phone-input__flag,
+.fi-phone-input__option-flag {
+    border-radius: 0.1875rem;
+}
+*/

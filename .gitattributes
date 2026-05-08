@@ -1,0 +1,13 @@
+* text=auto
+
+/.github export-ignore
+/tests export-ignore
+/vendor-src export-ignore
+/node_modules export-ignore
+/scripts export-ignore
+
+/.gitignore export-ignore
+/.gitattributes export-ignore
+/package-lock.json export-ignore
+/package.json export-ignore
+/vite.config.js export-ignore
