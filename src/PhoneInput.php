@@ -175,44 +175,30 @@ class PhoneInput extends Field
     {
         $stateToDehydrate = parent::getStateToDehydrate($state);
 
-        $componentStatePath = array_key_first($stateToDehydrate);
+        $componentStatePath = $this->getStatePath();
+        $phoneStatePath = $this->getPhoneStatePath();
 
-        if (! is_string($componentStatePath)) {
-            return $stateToDehydrate;
-        }
+        $phone = $this->getPhoneStateForDehydration($phoneStatePath);
 
-        $phoneConfiguredStatePath = $this->evaluateNullableString($this->phoneStatePath);
-
-        if ($phoneConfiguredStatePath !== null) {
-            $phoneStatePath = $this->normalizeDehydratedStatePath($phoneConfiguredStatePath);
-            $phone = $this->getPhoneStateForDehydration($this->getPhoneStatePath());
-
+        if ($phoneStatePath !== $componentStatePath) {
             unset($stateToDehydrate[$componentStatePath]);
-
-            if ($phone !== null) {
-                $stateToDehydrate[$phoneStatePath] = $phone;
-            }
         }
 
-        $countryConfiguredStatePath = $this->evaluateNullableString($this->countryStatePath);
+        if ($phone !== null) {
+            $stateToDehydrate[$phoneStatePath] = $phone;
+        }
 
-        if ($countryConfiguredStatePath === null) {
+        $countryStatePath = $this->getCountryStatePath();
+
+        if ($countryStatePath === null) {
             return $stateToDehydrate;
         }
 
-        $countryLivewireStatePath = $this->getCountryStatePath();
+        $country = $this->getCountryStateForDehydration($countryStatePath);
 
-        if ($countryLivewireStatePath === null) {
-            return $stateToDehydrate;
+        if ($country !== null) {
+            $stateToDehydrate[$countryStatePath] = $country;
         }
-
-        $country = $this->getCountryStateForDehydration($countryLivewireStatePath);
-
-        if ($country === null) {
-            return $stateToDehydrate;
-        }
-
-        $stateToDehydrate[$this->normalizeDehydratedStatePath($countryConfiguredStatePath)] = $country;
 
         return $stateToDehydrate;
     }
@@ -561,29 +547,6 @@ class PhoneInput extends Field
         }
 
         return "{$parentStatePath}.{$path}";
-    }
-
-    protected function normalizeDehydratedStatePath(string $path): string
-    {
-        $path = trim($path, '.');
-
-        $fieldStatePath = trim($this->getStatePath(), '.');
-
-        if ($fieldStatePath === '' || ! str_contains($fieldStatePath, '.')) {
-            return $path;
-        }
-
-        $stateRoot = substr($fieldStatePath, 0, strpos($fieldStatePath, '.'));
-
-        if ($stateRoot === '') {
-            return $path;
-        }
-
-        if (str_starts_with($path, "{$stateRoot}.")) {
-            return substr($path, strlen($stateRoot) + 1);
-        }
-
-        return $path;
     }
 
     protected function evaluateNullableString(string | Closure | null $value): ?string
