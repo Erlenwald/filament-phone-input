@@ -9,6 +9,8 @@ use Filament\Forms\Components\Field;
 
 class PhoneInput extends Field
 {
+    protected const TRANSLATION_NAMESPACE = 'erlenwald-filament-phone-input';
+
     protected string $view = 'erlenwald-filament-phone-input::phone-input';
 
     protected string | Closure | null $phoneStatePath = null;
@@ -49,6 +51,13 @@ class PhoneInput extends Field
         return $this;
     }
 
+    public function withoutCountryStatePath(): static
+    {
+        $this->countryStatePath = null;
+
+        return $this;
+    }
+
     /**
      * @param  array<string> | Closure(): array<string> | null  $countries
      */
@@ -69,11 +78,24 @@ class PhoneInput extends Field
         return $this;
     }
 
+    /**
+     * @param  array<string> | Closure(): array<string> | null  $countries
+     */
+    public function preferredCountries(array | Closure | null $countries = null): static
+    {
+        return $this->favoriteCountries($countries);
+    }
+
     public function defaultCountry(string | Closure | null $country): static
     {
         $this->defaultCountry = $country;
 
         return $this;
+    }
+
+    public function initialCountry(?string $country): static
+    {
+        return $this->defaultCountry($country);
     }
 
     public function displayCountryFlag(bool | Closure $condition = true): static
@@ -88,6 +110,16 @@ class PhoneInput extends Field
         $this->flagAspect = $aspect;
 
         return $this;
+    }
+
+    public function squareFlags(): static
+    {
+        return $this->flagAspect('1x1');
+    }
+
+    public function rectangularFlags(): static
+    {
+        return $this->flagAspect('4x3');
     }
 
     public function phoneNumberFormat(PhoneNumberFormat | string | Closure $format): static
@@ -134,6 +166,55 @@ class PhoneInput extends Field
         }
 
         return $this->resolveStatePath($path);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getStateToDehydrate(mixed $state): array
+    {
+        $stateToDehydrate = parent::getStateToDehydrate($state);
+
+        $componentStatePath = array_key_first($stateToDehydrate);
+
+        if (! is_string($componentStatePath)) {
+            return $stateToDehydrate;
+        }
+
+        $phoneConfiguredStatePath = $this->evaluateNullableString($this->phoneStatePath);
+
+        if ($phoneConfiguredStatePath !== null) {
+            $phoneStatePath = $this->normalizeDehydratedStatePath($phoneConfiguredStatePath);
+            $phone = $this->getPhoneStateForDehydration($this->getPhoneStatePath());
+
+            unset($stateToDehydrate[$componentStatePath]);
+
+            if ($phone !== null) {
+                $stateToDehydrate[$phoneStatePath] = $phone;
+            }
+        }
+
+        $countryConfiguredStatePath = $this->evaluateNullableString($this->countryStatePath);
+
+        if ($countryConfiguredStatePath === null) {
+            return $stateToDehydrate;
+        }
+
+        $countryLivewireStatePath = $this->getCountryStatePath();
+
+        if ($countryLivewireStatePath === null) {
+            return $stateToDehydrate;
+        }
+
+        $country = $this->getCountryStateForDehydration($countryLivewireStatePath);
+
+        if ($country === null) {
+            return $stateToDehydrate;
+        }
+
+        $stateToDehydrate[$this->normalizeDehydratedStatePath($countryConfiguredStatePath)] = $country;
+
+        return $stateToDehydrate;
     }
 
     /**
@@ -200,6 +281,7 @@ class PhoneInput extends Field
         $supportedCountries = $this->getSupportedCountryDefinitions();
         $visibleCountries = $this->getCountries();
         $favoriteCountries = $this->getFavoriteCountries();
+
         $favoriteDefinitions = [];
         $regularDefinitions = [];
 
@@ -228,8 +310,8 @@ class PhoneInput extends Field
     public function getCountryGroupLabels(): array
     {
         return [
-            'favorites' => __('erlenwald-filament-phone-input::phone-input.groups.favorites'),
-            'allCountries' => __('erlenwald-filament-phone-input::phone-input.groups.all_countries'),
+            'favorites' => __(self::TRANSLATION_NAMESPACE . '::phone-input.groups.favorites'),
+            'allCountries' => __(self::TRANSLATION_NAMESPACE . '::phone-input.groups.all_countries'),
         ];
     }
 
@@ -296,7 +378,7 @@ class PhoneInput extends Field
         return [
             ...$country,
             'iso2' => $iso2,
-            'name' => __("erlenwald-filament-phone-input::phone-input.countries.{$iso2}"),
+            'name' => __(self::TRANSLATION_NAMESPACE . "::phone-input.countries.{$iso2}"),
         ];
     }
 
@@ -358,19 +440,150 @@ class PhoneInput extends Field
         return $countries;
     }
 
+    protected function getPhoneStateForDehydration(string $phoneStatePath): ?string
+    {
+        $phone = data_get($this->getLivewire(), $phoneStatePath);
+
+        if (! is_string($phone) || $phone === '') {
+            $phone = $this->getState();
+        }
+
+        if (! is_string($phone) || $phone === '') {
+            return null;
+        }
+
+        return $phone;
+    }
+
+    protected function getCountryStateForDehydration(string $countryStatePath): ?string
+    {
+        $country = data_get($this->getLivewire(), $countryStatePath);
+
+        if (! is_string($country) || $country === '') {
+            $country = $this->getDefaultCountry();
+        }
+
+        if (! is_string($country) || $country === '') {
+            $country = $this->detectCountryFromPhoneState();
+        }
+
+        if (! is_string($country) || $country === '') {
+            return null;
+        }
+
+        $country = strtoupper($country);
+
+        return in_array($country, $this->getCountries(), true)
+            ? $country
+            : null;
+    }
+
+    protected function detectCountryFromPhoneState(): ?string
+    {
+        $phone = $this->getPhoneStateForDehydration($this->getPhoneStatePath());
+
+        if ($phone === null) {
+            return null;
+        }
+
+        $digits = preg_replace('/\D+/', '', $phone);
+
+        if (! is_string($digits) || $digits === '') {
+            return null;
+        }
+
+        $countries = $this->getCountries();
+        $definitions = $this->getSupportedCountryDefinitions();
+
+        foreach ($countries as $country) {
+            $definition = $definitions[$country] ?? null;
+
+            if (! is_array($definition)) {
+                continue;
+            }
+
+            $dialDigits = (string) ($definition['dialDigits'] ?? '');
+
+            if ($dialDigits === '' || ! str_starts_with($digits, $dialDigits)) {
+                continue;
+            }
+
+            $nationalNumber = substr($digits, strlen($dialDigits));
+
+            if ($this->matchesCountryNationalNumber($definition, $nationalNumber)) {
+                return $country;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param  array<string, mixed>  $country
+     */
+    protected function matchesCountryNationalNumber(array $country, string $nationalNumber): bool
+    {
+        if ($nationalNumber === '') {
+            return false;
+        }
+
+        $localLengths = $country['localLengths'] ?? null;
+
+        if (is_array($localLengths) && ! in_array(strlen($nationalNumber), $localLengths, true)) {
+            return false;
+        }
+
+        $leadingDigits = $country['leadingDigits'] ?? null;
+
+        if (is_string($leadingDigits) && $leadingDigits !== '') {
+            return str_starts_with($nationalNumber, $leadingDigits);
+        }
+
+        return true;
+    }
+
     protected function resolveStatePath(string $path): string
     {
-        $containerPath = $this->getContainer()->getStatePath();
+        $fieldStatePath = $this->getStatePath();
 
-        if (! $containerPath) {
+        if ($fieldStatePath === '' || ! str_contains($fieldStatePath, '.')) {
             return $path;
         }
 
-        if ($path === $containerPath || str_starts_with($path, "{$containerPath}.")) {
+        $parentStatePath = substr($fieldStatePath, 0, strrpos($fieldStatePath, '.'));
+
+        if ($parentStatePath === '') {
             return $path;
         }
 
-        return "{$containerPath}.{$path}";
+        if ($path === $parentStatePath || str_starts_with($path, "{$parentStatePath}.")) {
+            return $path;
+        }
+
+        return "{$parentStatePath}.{$path}";
+    }
+
+    protected function normalizeDehydratedStatePath(string $path): string
+    {
+        $path = trim($path, '.');
+
+        $fieldStatePath = trim($this->getStatePath(), '.');
+
+        if ($fieldStatePath === '' || ! str_contains($fieldStatePath, '.')) {
+            return $path;
+        }
+
+        $stateRoot = substr($fieldStatePath, 0, strpos($fieldStatePath, '.'));
+
+        if ($stateRoot === '') {
+            return $path;
+        }
+
+        if (str_starts_with($path, "{$stateRoot}.")) {
+            return substr($path, strlen($stateRoot) + 1);
+        }
+
+        return $path;
     }
 
     protected function evaluateNullableString(string | Closure | null $value): ?string
