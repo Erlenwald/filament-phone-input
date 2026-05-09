@@ -9,12 +9,14 @@
     --fi-phone-input-flag-atlas-1x1: url('/vendor/erlenwald/filament-phone-input/flags/atlas-1x1.webp');
 
     background-image: var(--fi-phone-input-flag-atlas-1x1);
+    background-size: 1600% 1600%;
 }
 
 .fi-phone-input__flag-aspect-4x3 {
     --fi-phone-input-flag-atlas-4x3: url('/vendor/erlenwald/filament-phone-input/flags/atlas-4x3.webp');
 
     background-image: var(--fi-phone-input-flag-atlas-4x3);
+    background-size: 1600% 1600%;
 }
 
 .fi-phone-input__flag-country-ad {
