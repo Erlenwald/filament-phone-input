@@ -25,7 +25,7 @@
                 type="button"
                 x-ref="countryButton"
                 class="fi-phone-input__country-button"
-                aria-label="{{ __('filament-phone-input::phone-input.actions.select_country') }}"
+                aria-label="{{ __('erlenwald-filament-phone-input::phone-input.actions.select_country') }}"
                 :aria-expanded="open.toString()"
                 @click="toggleDropdown()"
                 @keydown.escape.stop.prevent="closeDropdown()"
@@ -80,7 +80,7 @@
                         type="search"
                         x-ref="searchInput"
                         x-model="search"
-                        placeholder="{{ __('filament-phone-input::phone-input.search.placeholder') }}"
+                        placeholder="{{ __('erlenwald-filament-phone-input::phone-input.search.placeholder') }}"
                         class="fi-phone-input__search-input"
                     />
                 </div>
@@ -126,7 +126,7 @@
                         x-show="! hasFilteredCountries"
                         class="fi-phone-input__no-results"
                     >
-                        {{ __('filament-phone-input::phone-input.search.no_results') }}
+                        {{ __('erlenwald-filament-phone-input::phone-input.search.no_results') }}
                     </div>
                 </div>
             </div>

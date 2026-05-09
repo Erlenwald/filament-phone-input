@@ -5,7 +5,7 @@
 |
 | This file is loaded after the package CSS when it exists at:
 |
-| resources/css/vendor/filament-phone-input/phone-input.css
+| resources/css/vendor/erlenwald/filament-phone-input/phone-input.css
 |
 | Publish it with:
 |
@@ -17,10 +17,29 @@
 */
 
 /*
-.fi-phone-input,
-.fi-phone-input__dropdown {
-    --fi-phone-input-primary: var(--primary-600);
+|--------------------------------------------------------------------------
+| Use SVG flag atlases instead of WebP
+|--------------------------------------------------------------------------
+|
+| By default, the package uses WebP flag atlases for smaller asset size.
+| Uncomment these rules if you prefer SVG atlases.
+|
+*/
+
+/*
+.fi-phone-input__flag-aspect-1x1 {
+    --fi-phone-input-flag-atlas-1x1: url('/vendor/erlenwald/filament-phone-input/flags/atlas-1x1.svg');
 }
+
+.fi-phone-input__flag-aspect-4x3 {
+    --fi-phone-input-flag-atlas-4x3: url('/vendor/erlenwald/filament-phone-input/flags/atlas-4x3.svg');
+}
+*/
+
+/*
+|--------------------------------------------------------------------------
+| Other examples
+|--------------------------------------------------------------------------
 */
 
 /*

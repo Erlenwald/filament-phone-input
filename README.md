@@ -58,9 +58,9 @@ You can publish only the files you need.
 
 | Tag | Publishes |
 | --- | --- |
-| `filament-phone-input-assets` | Flag atlas files to `public/vendor/filament-phone-input/flags` |
-| `filament-phone-input-translations` | Translation files to `lang/vendor/filament-phone-input` |
-| `filament-phone-input-styles` | Custom CSS file to `resources/css/vendor/filament-phone-input/phone-input.css` |
+| `filament-phone-input-assets` | Flag atlas files to `public/vendor/erlenwald/filament-phone-input/flags` |
+| `filament-phone-input-translations` | Translation files to `lang/vendor/erlenwald-filament-phone-input` |
+| `filament-phone-input-styles` | Custom CSS file to `resources/css/vendor/erlenwald/filament-phone-input/phone-input.css` |
 | `filament-phone-input-customization` | Translations and custom CSS |
 | `filament-phone-input-full` | Flags, translations, and custom CSS |
 
@@ -302,6 +302,46 @@ Flag icons require published flag assets:
 php artisan vendor:publish --tag=filament-phone-input-assets
 ```
 
+The package ships both WebP and SVG flag atlases.
+
+By default, WebP atlases are used because they are much smaller:
+
+| Atlas | SVG size | WebP size |
+| --- | ---: | ---: |
+| `atlas-1x1` | ~1.5 MB | ~188 KB |
+| `atlas-4x3` | ~1.5 MB | ~210 KB |
+
+If you prefer SVG atlases, publish the custom CSS file:
+
+```bash
+php artisan vendor:publish --tag=filament-phone-input-styles
+```
+
+Then edit:
+
+```text
+resources/css/vendor/erlenwald/filament-phone-input/phone-input.css
+```
+
+and override the flag atlas variables:
+
+```css
+.fi-phone-input__flag-aspect-1x1 {
+    --fi-phone-input-flag-atlas-1x1: url('/vendor/erlenwald/filament-phone-input/flags/atlas-1x1.svg');
+}
+
+.fi-phone-input__flag-aspect-4x3 {
+    --fi-phone-input-flag-atlas-4x3: url('/vendor/erlenwald/filament-phone-input/flags/atlas-4x3.svg');
+}
+```
+
+After changing custom CSS, run:
+
+```bash
+php artisan filament:assets
+php artisan optimize:clear
+```
+
 ## IP lookup
 
 IP lookup is optional and does not override a value already typed by the user.
@@ -362,8 +402,8 @@ php artisan vendor:publish --tag=filament-phone-input-translations
 Published files:
 
 ```text
-lang/vendor/filament-phone-input/en/phone-input.php
-lang/vendor/filament-phone-input/ru/phone-input.php
+lang/vendor/erlenwald-filament-phone-input/en/phone-input.php
+lang/vendor/erlenwald-filament-phone-input/ru/phone-input.php
 ```
 
 You can edit these files to override labels, country names, search placeholder, and group names.
@@ -379,7 +419,7 @@ php artisan vendor:publish --tag=filament-phone-input-styles
 Published file:
 
 ```text
-resources/css/vendor/filament-phone-input/phone-input.css
+resources/css/vendor/erlenwald/filament-phone-input/phone-input.css
 ```
 
 This file is loaded after the package CSS, so you can override component styles and CSS variables there.
@@ -404,17 +444,26 @@ PhoneInput::make('phone')
 
 ## Assets
 
-The component uses generated SVG atlas files:
+The component uses generated flag atlas files.
+
+WebP atlases are used by default:
+
+```text
+atlas-1x1.webp
+atlas-4x3.webp
+```
+
+SVG atlases are also included and can be enabled through custom CSS:
 
 ```text
 atlas-1x1.svg
 atlas-4x3.svg
 ```
 
-They are published to:
+All flag atlases are published to:
 
 ```text
-public/vendor/filament-phone-input/flags
+public/vendor/erlenwald/filament-phone-input/flags
 ```
 
 The base JavaScript and CSS assets are registered through Filament:

@@ -9,7 +9,7 @@ use Filament\Forms\Components\Field;
 
 class PhoneInput extends Field
 {
-    protected string $view = 'filament-phone-input::phone-input';
+    protected string $view = 'erlenwald-filament-phone-input::phone-input';
 
     protected string | Closure | null $phoneStatePath = null;
 
@@ -228,8 +228,8 @@ class PhoneInput extends Field
     public function getCountryGroupLabels(): array
     {
         return [
-            'favorites' => __('filament-phone-input::phone-input.groups.favorites'),
-            'allCountries' => __('filament-phone-input::phone-input.groups.all_countries'),
+            'favorites' => __('erlenwald-filament-phone-input::phone-input.groups.favorites'),
+            'allCountries' => __('erlenwald-filament-phone-input::phone-input.groups.all_countries'),
         ];
     }
 
@@ -296,7 +296,7 @@ class PhoneInput extends Field
         return [
             ...$country,
             'iso2' => $iso2,
-            'name' => __("filament-phone-input::phone-input.countries.{$iso2}"),
+            'name' => __("erlenwald-filament-phone-input::phone-input.countries.{$iso2}"),
         ];
     }
 

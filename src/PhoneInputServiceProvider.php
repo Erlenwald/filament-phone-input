@@ -9,10 +9,18 @@ use Illuminate\Support\ServiceProvider;
 
 class PhoneInputServiceProvider extends ServiceProvider
 {
+    protected const PACKAGE = 'erlenwald/filament-phone-input';
+
+    protected const TRANSLATION_NAMESPACE = 'erlenwald-filament-phone-input';
+
+    protected const PUBLIC_VENDOR_PATH = 'vendor/erlenwald/filament-phone-input';
+
+    protected const CUSTOM_CSS_PATH = 'css/vendor/erlenwald/filament-phone-input/phone-input.css';
+
     public function boot(): void
     {
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'filament-phone-input');
-        $this->loadTranslationsFrom(__DIR__ . '/lang', 'filament-phone-input');
+        $this->loadTranslationsFrom(__DIR__ . '/lang', self::TRANSLATION_NAMESPACE);
 
         $this->registerPublishing();
         $this->registerAssets();
@@ -21,15 +29,15 @@ class PhoneInputServiceProvider extends ServiceProvider
     protected function registerPublishing(): void
     {
         $flags = [
-            __DIR__ . '/../resources/flags' => public_path('vendor/filament-phone-input/flags'),
+            __DIR__ . '/../resources/flags' => public_path(self::PUBLIC_VENDOR_PATH . '/flags'),
         ];
 
         $translations = [
-            __DIR__ . '/lang' => lang_path('vendor/filament-phone-input'),
+            __DIR__ . '/lang' => lang_path('vendor/' . self::TRANSLATION_NAMESPACE),
         ];
 
         $styles = [
-            __DIR__ . '/../resources/css/phone-input.custom.css' => resource_path('css/vendor/filament-phone-input/phone-input.css'),
+            __DIR__ . '/../resources/css/phone-input.custom.css' => resource_path(self::CUSTOM_CSS_PATH),
         ];
 
         $this->publishes($flags, 'filament-phone-input-assets');
@@ -55,7 +63,7 @@ class PhoneInputServiceProvider extends ServiceProvider
             Css::make('phone-input', __DIR__ . '/../dist/phone-input.css'),
         ];
 
-        $customCssPath = resource_path('css/vendor/filament-phone-input/phone-input.css');
+        $customCssPath = resource_path(self::CUSTOM_CSS_PATH);
 
         if (is_file($customCssPath)) {
             $assets[] = Css::make('phone-input-custom', $customCssPath);
@@ -63,7 +71,7 @@ class PhoneInputServiceProvider extends ServiceProvider
 
         FilamentAsset::register(
             assets: $assets,
-            package: 'erlenwald/filament-phone-input',
+            package: self::PACKAGE,
         );
     }
 }
