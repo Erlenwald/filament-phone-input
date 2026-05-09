@@ -11,7 +11,7 @@ class PhoneInputServiceProvider extends ServiceProvider
 {
     protected const PACKAGE = 'erlenwald/filament-phone-input';
 
-    protected const TRANSLATION_NAMESPACE = 'erlenwald-filament-phone-input';
+    protected const NAMESPACE = 'erlenwald-filament-phone-input';
 
     protected const PUBLIC_VENDOR_PATH = 'vendor/erlenwald/filament-phone-input';
 
@@ -19,8 +19,8 @@ class PhoneInputServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'filament-phone-input');
-        $this->loadTranslationsFrom(__DIR__ . '/lang', self::TRANSLATION_NAMESPACE);
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', self::NAMESPACE);
+        $this->loadTranslationsFrom(__DIR__ . '/lang', self::NAMESPACE);
 
         $this->registerPublishing();
         $this->registerAssets();
@@ -33,7 +33,7 @@ class PhoneInputServiceProvider extends ServiceProvider
         ];
 
         $translations = [
-            __DIR__ . '/lang' => lang_path('vendor/' . self::TRANSLATION_NAMESPACE),
+            __DIR__ . '/lang' => lang_path('vendor/' . self::NAMESPACE),
         ];
 
         $styles = [
